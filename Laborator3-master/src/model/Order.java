@@ -38,7 +38,6 @@ public class Order {
         items.add(new OrderItem(itemName, quantity));
     }
 
-
     public void removeItem(String itemName) throws InvalidOrderException {
         OrderItem itemToRemove = null;
 

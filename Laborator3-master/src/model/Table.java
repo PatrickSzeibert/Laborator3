@@ -1,4 +1,3 @@
-// model/Table.java
 package model;
 
 public class Table {

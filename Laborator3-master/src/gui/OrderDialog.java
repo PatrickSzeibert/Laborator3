@@ -1,4 +1,3 @@
-// gui/OrderDialog.java
 package gui;
 
 import exceptions.InvalidOrderException;
@@ -16,8 +15,8 @@ public class OrderDialog extends JDialog {
     private JTextField itemField;
     private JTextField quantityField;
     private JComboBox<Table> tableComboBox;
-    private JList<OrderItem> orderItemList; // List to display order items
-    private DefaultListModel<OrderItem> orderItemListModel; // Model for the list
+    private JList<OrderItem> orderItemList;
+    private DefaultListModel<OrderItem> orderItemListModel;
     private Order order;
 
     public OrderDialog(JFrame parent, List<Table> tables) {
@@ -70,7 +69,7 @@ public class OrderDialog extends JDialog {
         panel.add(submitButton);
         panel.add(removeButton);
         panel.add(finalizeButton);
-        panel.add(new JScrollPane(orderItemList)); // Add list to the dialog
+        panel.add(new JScrollPane(orderItemList));
 
         add(panel);
     }

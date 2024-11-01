@@ -1,4 +1,3 @@
-// threads/OrderFileWatcher.java
 package threads;
 
 import java.io.File;

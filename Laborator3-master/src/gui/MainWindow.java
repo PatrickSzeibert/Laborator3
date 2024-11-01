@@ -1,4 +1,3 @@
-// gui/MainWindow.java
 package gui;
 
 import model.Order;
@@ -178,7 +177,7 @@ public class MainWindow extends JFrame {
 
             if (orderToRemove != null) {
                 orders.remove(orderToRemove);
-                orderToRemove.getTable().setOccupied(false); // Marcare masa ca neocupată
+                orderToRemove.getTable().setOccupied(false);
                 updateOrdersArea();
                 JOptionPane.showMessageDialog(this, "Table " + tableNumber + " has been released.");
             } else {

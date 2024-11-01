@@ -1,4 +1,3 @@
-// gui/TableDialog.java
 package gui;
 
 import model.Table;

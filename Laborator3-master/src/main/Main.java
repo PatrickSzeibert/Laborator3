@@ -1,4 +1,3 @@
-// main/Main.java
 package main;
 
 import gui.MainWindow;
@@ -8,7 +7,4 @@ public class Main {
 
         new MainWindow();
     }
-
-
-
 }

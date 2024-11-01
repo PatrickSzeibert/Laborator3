@@ -1,4 +1,3 @@
-// model/OrderItem.java
 package model;
 
 public class OrderItem {

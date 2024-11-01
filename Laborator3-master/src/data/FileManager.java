@@ -1,4 +1,3 @@
-// data/FileManager.java
 package data;
 
 import java.io.*;

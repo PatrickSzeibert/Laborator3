@@ -1,4 +1,3 @@
-// threads/ClockUpdater.java
 package threads;
 
 import javax.swing.JLabel;
