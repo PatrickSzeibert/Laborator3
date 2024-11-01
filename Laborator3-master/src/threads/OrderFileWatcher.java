@@ -20,7 +20,7 @@ public class OrderFileWatcher implements Runnable {
                 System.out.println("The order file has been updated!");
             }
             try {
-                TimeUnit.SECONDS.sleep(5);
+                TimeUnit.SECONDS.sleep(2);
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 break;
