@@ -18,7 +18,7 @@ public class OrderItem {
         return quantity;
     }
 
-    // Adaugă acest setter
+
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }

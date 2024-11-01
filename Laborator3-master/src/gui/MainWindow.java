@@ -1,10 +1,11 @@
 // gui/MainWindow.java
 package gui;
 
-import model.Table;
 import model.Order;
-import model.OrderItem;
+import model.Table;
 import data.FileManager;
+import threads.ClockUpdater;
+import threads.OrderFileWatcher;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,10 +19,11 @@ public class MainWindow extends JFrame {
     private List<Table> tables;
     private List<Order> orders;
     private JTextArea ordersArea;
+    private JLabel clockLabel;
 
     public MainWindow() {
         setTitle("Restaurant Management");
-        setSize(500, 400);
+        setSize(700, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -32,6 +34,9 @@ public class MainWindow extends JFrame {
         ordersArea = new JTextArea();
         ordersArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(ordersArea);
+
+        clockLabel = new JLabel("Current Time: ");
+        add(clockLabel, BorderLayout.NORTH);
 
         JButton newOrderButton = new JButton("New Order");
         newOrderButton.addActionListener(new ActionListener() {
@@ -65,11 +70,12 @@ public class MainWindow extends JFrame {
             }
         });
 
-        JButton deleteOrderButton = new JButton("Delete Order");
-        deleteOrderButton.addActionListener(new ActionListener() {
+
+        JButton releaseTableButton = new JButton("Release Table");
+        releaseTableButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                deleteOrder();
+                releaseTable();
             }
         });
 
@@ -78,11 +84,24 @@ public class MainWindow extends JFrame {
         panel.add(updateOrderButton);
         panel.add(addTableButton);
         panel.add(saveButton);
-        panel.add(deleteOrderButton);
+        panel.add(releaseTableButton);
 
         add(scrollPane, BorderLayout.CENTER);
         add(panel, BorderLayout.SOUTH);
         setVisible(true);
+
+
+        startThreads();
+    }
+
+    private void startThreads() {
+        ClockUpdater clockUpdater = new ClockUpdater(clockLabel);
+        Thread clockThread = new Thread(clockUpdater);
+        clockThread.start();
+
+        OrderFileWatcher fileWatcher = new OrderFileWatcher("orders.txt");
+        Thread fileWatcherThread = new Thread(fileWatcher);
+        fileWatcherThread.start();
     }
 
     private void createTables() {
@@ -109,7 +128,7 @@ public class MainWindow extends JFrame {
                 Order order = orders.get(index);
                 OrderDialog dialog = new OrderDialog(this, tables, order);
                 dialog.setVisible(true);
-                updateOrdersArea(); // Actualizăm lista după modificare
+                updateOrdersArea();
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid index.");
             }
@@ -138,6 +157,32 @@ public class MainWindow extends JFrame {
                 JOptionPane.showMessageDialog(this, "Order deleted.");
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid index.");
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Invalid input.");
+        }
+    }
+
+    private void releaseTable() {
+        String input = JOptionPane.showInputDialog(this, "Enter table number to release:");
+        try {
+            int tableNumber = Integer.parseInt(input);
+            Order orderToRemove = null;
+
+            for (Order order : orders) {
+                if (order.getTable().getNumber() == tableNumber) {
+                    orderToRemove = order;
+                    break;
+                }
+            }
+
+            if (orderToRemove != null) {
+                orders.remove(orderToRemove);
+                orderToRemove.getTable().setOccupied(false); // Marcare masa ca neocupată
+                updateOrdersArea();
+                JOptionPane.showMessageDialog(this, "Table " + tableNumber + " has been released.");
+            } else {
+                JOptionPane.showMessageDialog(this, "No active order for table " + tableNumber + ".");
             }
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Invalid input.");

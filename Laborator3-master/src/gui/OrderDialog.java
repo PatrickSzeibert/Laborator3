@@ -1,6 +1,7 @@
 // gui/OrderDialog.java
 package gui;
 
+import exceptions.InvalidOrderException;
 import model.Order;
 import model.OrderItem;
 import model.Table;
@@ -21,7 +22,7 @@ public class OrderDialog extends JDialog {
 
     public OrderDialog(JFrame parent, List<Table> tables) {
         super(parent, "New Order", true);
-        setSize(300, 300);
+        setSize(500, 300);
         setLocationRelativeTo(parent);
 
         itemField = new JTextField(10);
@@ -34,7 +35,11 @@ public class OrderDialog extends JDialog {
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                addOrderItem();
+                try {
+                    addOrderItem();
+                } catch (InvalidOrderException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -70,19 +75,19 @@ public class OrderDialog extends JDialog {
         add(panel);
     }
 
-    // Constructor pentru actualizarea comenzilor
+
     public OrderDialog(JFrame parent, List<Table> tables, Order existingOrder) {
-        this(parent, tables); // Apelează constructorul de bază
-        this.order = existingOrder; // Setează comanda existentă
+        this(parent, tables);
+        this.order = existingOrder;
         tableComboBox.setSelectedItem(existingOrder.getTable());
 
-        // Populează lista cu produsele comenzii existente
+
         for (OrderItem item : existingOrder.getItems()) {
             orderItemListModel.addElement(item);
         }
     }
 
-    private void addOrderItem() {
+    private void addOrderItem() throws InvalidOrderException {
         String item = itemField.getText();
         int quantity;
 
@@ -100,21 +105,21 @@ public class OrderDialog extends JDialog {
             order = new Order((Table) tableComboBox.getSelectedItem());
         }
 
-        // Verificăm dacă produsul există deja în comanda curentă
+
         boolean itemExists = false;
         for (OrderItem existingItem : order.getItems()) {
             if (existingItem.getName().equals(item)) {
-                existingItem.setQuantity(existingItem.getQuantity() + quantity); // Actualizăm cantitatea
+                existingItem.setQuantity(existingItem.getQuantity() + quantity);
                 itemExists = true;
                 break;
             }
         }
 
         if (!itemExists) {
-            order.addItem(item, quantity); // Adăugăm un nou produs
-            orderItemListModel.addElement(new OrderItem(item, quantity)); // Adăugăm în listă
+            order.addItem(item, quantity);
+            orderItemListModel.addElement(new OrderItem(item, quantity));
         } else {
-            // Actualizăm lista
+
             orderItemListModel.clear();
             for (OrderItem existingItem : order.getItems()) {
                 orderItemListModel.addElement(existingItem);
@@ -124,7 +129,7 @@ public class OrderDialog extends JDialog {
         itemField.setText("");
         quantityField.setText("");
 
-        // Actualizează fereastra principală
+
         ((MainWindow) getParent()).updateOrderArea(order);
         JOptionPane.showMessageDialog(this, "Item added to order.");
     }
@@ -132,8 +137,8 @@ public class OrderDialog extends JDialog {
     private void removeOrderItem() {
         OrderItem selectedItem = orderItemList.getSelectedValue();
         if (selectedItem != null) {
-            order.getItems().remove(selectedItem); // Elimină din comanda
-            orderItemListModel.removeElement(selectedItem); // Elimină din listă
+            order.getItems().remove(selectedItem);
+            orderItemListModel.removeElement(selectedItem);
             JOptionPane.showMessageDialog(this, "Item removed from order.");
         } else {
             JOptionPane.showMessageDialog(this, "No item selected to remove.");
